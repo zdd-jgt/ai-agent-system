@@ -1,0 +1,345 @@
+.agent-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.agent-page__header {
+  margin-bottom: 1rem;
+}
+
+.agent-page__header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+}
+
+.agent-page__subtitle {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.agent-chat {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+  min-height: 20rem;
+}
+
+.agent-chat__empty {
+  color: var(--text);
+  text-align: center;
+  padding: 2rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+}
+
+.agent-message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 100%;
+}
+
+.agent-message--user {
+  align-items: flex-end;
+}
+
+.agent-message--assistant {
+  align-items: flex-start;
+}
+
+.agent-message__role {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.agent-message__bubble {
+  width: auto;
+  max-width: 42rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--social-bg);
+}
+
+.agent-message--user .agent-message__bubble {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+.agent-message__typing {
+  color: var(--text);
+  font-style: italic;
+}
+
+.agent-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.agent-composer__input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font: inherit;
+  color: var(--text-h);
+  background: var(--bg);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.agent-composer__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.agent-composer__mode {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+}
+
+.agent-composer__submit {
+  margin-left: auto;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agent-composer__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ReAct trace */
+.react-trace {
+  width: 100%;
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.react-trace__header {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.react-trace__plan {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-h);
+  font-size: 0.9rem;
+}
+
+.react-step {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background: var(--code-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.react-step__title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.react-phase {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.react-phase__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.35rem;
+  border-radius: 0.25rem;
+  text-align: center;
+}
+
+.react-phase--think .react-phase__label {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.react-phase--act .react-phase__label {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.react-phase--observe .react-phase__label {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.react-phase__body {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-h);
+  line-height: 1.5;
+}
+
+.react-phase__code {
+  margin: 0;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.react-step--thinking {
+  border-color: #93c5fd;
+}
+
+.react-step--acting {
+  border-color: #fcd34d;
+}
+
+.react-step--observing {
+  border-color: #6ee7b7;
+}
+
+.react-step--done {
+  border-color: var(--border);
+  opacity: 0.95;
+}
+
+/* Markdown */
+.markdown-body {
+  text-align: left;
+  color: var(--text-h);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.markdown-body > *:first-child {
+  margin-top: 0;
+}
+
+.markdown-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin: 1em 0 0.5em;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.markdown-body p {
+  margin: 0.5em 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-body pre {
+  margin: 0.75em 0;
+  padding: 0.875rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+}
+
+.markdown-body pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.85rem;
+}
+
+.markdown-body :not(pre) > code {
+  padding: 0.15em 0.35em;
+  border-radius: 0.25rem;
+  background: var(--code-bg);
+  font-size: 0.88em;
+}
+
+.markdown-body blockquote {
+  margin: 0.75em 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--accent-border);
+  color: var(--text);
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.75em 0;
+  font-size: 0.9em;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border);
+  padding: 0.4em 0.6em;
+}
+
+.markdown-body a {
+  color: var(--accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  .react-phase--think .react-phase__label {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+  }
+
+  .react-phase--act .react-phase__label {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+  }
+
+  .react-phase--observe .react-phase__label {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+  }
+
+  .markdown-body pre {
+    background: #1f2028;
+  }
+}
