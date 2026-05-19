@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import MarkdownContent from "../components/MarkdownContent";
 import ReActTrace from "../components/ReActTrace";
+import {
+  formatSessionLabel,
+  getSessionId,
+  resetSessionId,
+} from "../lib/session";
 import { runAgentStream } from "../services/agent";
 import type { AgentStreamEvent, ReActTraceStep } from "../types/agent-events";
 import "./AgentPage.css";
@@ -87,6 +92,8 @@ export default function AgentPage() {
   const [mode, setMode] = useState("react");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(() => getSessionId());
+  const [memoryTurnCount, setMemoryTurnCount] = useState(0);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -123,35 +130,44 @@ export default function AgentPage() {
     setLoading(true);
 
     try {
-      const result = await runAgentStream(text, mode, (event) => {
-        setMessages((prev) =>
-          prev.map((message) => {
-            if (message.id !== assistantId) return message;
+      const result = await runAgentStream(
+        text,
+        mode,
+        (event) => {
+          if (event.type === "memory" && event.turnCount !== undefined) {
+            setMemoryTurnCount(event.turnCount);
+          }
 
-            const updated = applyStreamEvent(
-              message.trace,
-              message.planSteps,
-              event
-            );
+          setMessages((prev) =>
+            prev.map((message) => {
+              if (message.id !== assistantId) return message;
 
-            return {
-              ...message,
-              trace: updated.trace,
-              planSteps: updated.planSteps,
-              content:
-                event.type === "final"
-                  ? (event.content ?? message.content)
-                  : message.content,
-              status:
-                event.type === "error"
-                  ? "error"
-                  : event.type === "final"
-                    ? "done"
-                    : "streaming",
-            };
-          })
-        );
-      });
+              const updated = applyStreamEvent(
+                message.trace,
+                message.planSteps,
+                event
+              );
+
+              return {
+                ...message,
+                trace: updated.trace,
+                planSteps: updated.planSteps,
+                content:
+                  event.type === "final"
+                    ? (event.content ?? message.content)
+                    : message.content,
+                status:
+                  event.type === "error"
+                    ? "error"
+                    : event.type === "final"
+                      ? "done"
+                      : "streaming",
+              };
+            })
+          );
+        },
+        { sessionId }
+      );
 
       setMessages((prev) =>
         prev.map((message) =>
@@ -188,12 +204,36 @@ export default function AgentPage() {
     }
   };
 
+  const handleClearMemory = () => {
+    const nextId = resetSessionId();
+    setSessionId(nextId);
+    setMemoryTurnCount(0);
+    setMessages([]);
+  };
+
   return (
     <div className="agent-page">
       <header className="agent-page__header">
-        <h1>AI Agent 控制台</h1>
+        <div className="agent-page__header-row">
+          <h1>AI Agent 控制台</h1>
+          <div className="agent-memory" title={`会话 ID: ${sessionId}`}>
+            <span className="agent-memory__label">短期记忆</span>
+            <span className="agent-memory__count">{memoryTurnCount} 条</span>
+            <span className="agent-memory__id">
+              {formatSessionLabel(sessionId)}
+            </span>
+            <button
+              type="button"
+              className="agent-memory__clear"
+              onClick={handleClearMemory}
+              disabled={loading}
+            >
+              新会话
+            </button>
+          </div>
+        </div>
         <p className="agent-page__subtitle">
-          支持 Markdown 渲染与 ReAct 思考-行动-观察实时展示
+          支持 Markdown 渲染、可折叠 ReAct 轨迹与会话短期记忆
         </p>
       </header>
 
@@ -214,7 +254,11 @@ export default function AgentPage() {
             </div>
 
             {message.role === "assistant" && (
-              <ReActTrace steps={message.trace} planSteps={message.planSteps} />
+              <ReActTrace
+                steps={message.trace}
+                planSteps={message.planSteps}
+                isStreaming={message.status === "streaming"}
+              />
             )}
 
             {(message.content || message.status === "streaming") && (

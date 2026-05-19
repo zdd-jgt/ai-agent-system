@@ -1,19 +1,42 @@
 import { callDeepseek } from "../utils/llm";
 import { toolMap, toolList } from "../tools";
 import type { AgentEventHandler } from "../types/agent-events";
+import {
+  addAssistantTurn,
+  addUserTurn,
+  formatMemoryContext,
+  getTurnCount,
+} from "../memory/session-memory";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
 };
 
+export type RunAgentOptions = {
+  sessionId?: string;
+};
+
 export async function runReAct(
   userInput: string,
-  onEvent?: AgentEventHandler
+  onEvent?: AgentEventHandler,
+  options?: RunAgentOptions
 ) {
+  const sessionId = options?.sessionId;
+  const memoryContext = sessionId ? formatMemoryContext(sessionId) : "";
+
+  if (sessionId) {
+    onEvent?.({
+      type: "memory",
+      sessionId,
+      turnCount: getTurnCount(sessionId),
+    });
+  }
+
   const messages: Message[] = [{ role: "user", content: userInput }];
   let scratchpad = "";
   const usedTools = new Set<string>();
+  const toolSummaries: string[] = [];
 
   const toolDescriptions = toolList
     .map(
@@ -36,11 +59,12 @@ export async function runReAct(
 
             可用工具：
             ${toolDescriptions}
+            ${memoryContext}
 
             【思考过程】
             ${scratchpad}
 
-            【历史对话】
+            【本轮对话】
             ${messages.map((m) => `${m.role}: ${m.content}`).join("\n")}   
 
             【输出格式（必须严格 JSON）】
@@ -91,6 +115,7 @@ export async function runReAct(
     if (data.action === "final") {
       console.log("✅ Final Answer:", data.answer);
       const answer = data.answer ?? "";
+      persistSessionTurn(sessionId, userInput, answer, toolSummaries, onEvent);
       onEvent?.({ type: "final", content: answer });
       return answer;
     }
@@ -137,6 +162,8 @@ export async function runReAct(
         observation: result,
       });
 
+      toolSummaries.push(`${toolName}(${JSON.stringify(toolArgs)}) → ${JSON.stringify(result)}`);
+
       scratchpad += `
                 Thought: ${data.thought ?? ""}
                 Action: ${data.toolName}
@@ -165,6 +192,34 @@ export async function runReAct(
     `;
 
   const finalAnswer = await callDeepseek(finalPrompt);
+  persistSessionTurn(
+    sessionId,
+    userInput,
+    finalAnswer,
+    toolSummaries,
+    onEvent
+  );
   onEvent?.({ type: "final", content: finalAnswer });
   return finalAnswer;
+}
+
+function persistSessionTurn(
+  sessionId: string | undefined,
+  userInput: string,
+  answer: string,
+  toolSummaries: string[],
+  onEvent?: AgentEventHandler
+): void {
+  if (!sessionId) return;
+
+  addUserTurn(sessionId, userInput);
+  const toolSummary =
+    toolSummaries.length > 0 ? toolSummaries.join("; ") : undefined;
+  addAssistantTurn(sessionId, answer, toolSummary);
+
+  onEvent?.({
+    type: "memory",
+    sessionId,
+    turnCount: getTurnCount(sessionId),
+  });
 }

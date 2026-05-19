@@ -14,14 +14,27 @@ function writeSseEvent(res: express.Response, event: AgentEvent) {
 }
 
 app.post("/agent", async (req, res) => {
-  const { message } = req.body;
+  const { message, sessionId } = req.body as {
+    message?: string;
+    sessionId?: string;
+  };
+
+  if (!message || typeof message !== "string") {
+    res.status(400).json({ error: "message is required" });
+    return;
+  }
+
   try {
     const mode = req.body.mode || "react";
+    const options =
+      typeof sessionId === "string" && sessionId.length > 0
+        ? { sessionId }
+        : undefined;
     let result;
     if (mode === "react") {
-      result = await runReAct(message);
+      result = await runReAct(message, undefined, options);
     } else {
-      result = await runTask(message);
+      result = await runTask(message, undefined, options);
     }
     res.json({ result });
   } catch (err) {
@@ -31,9 +44,10 @@ app.post("/agent", async (req, res) => {
 });
 
 app.post("/agent/stream", async (req, res) => {
-  const { message, mode = "react" } = req.body as {
+  const { message, mode = "react", sessionId } = req.body as {
     message?: string;
     mode?: string;
+    sessionId?: string;
   };
 
   if (!message || typeof message !== "string") {
@@ -47,12 +61,16 @@ app.post("/agent/stream", async (req, res) => {
   res.flushHeaders?.();
 
   const send = (event: AgentEvent) => writeSseEvent(res, event);
+  const options =
+    typeof sessionId === "string" && sessionId.length > 0
+      ? { sessionId }
+      : undefined;
 
   try {
     if (mode === "react") {
-      await runReAct(message, send);
+      await runReAct(message, send, options);
     } else {
-      await runTask(message, send);
+      await runTask(message, send, options);
     }
     res.write("data: [DONE]\n\n");
     res.end();

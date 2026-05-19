@@ -5,6 +5,7 @@ export type AgentEventType =
   | "observe"
   | "plan"
   | "task_step"
+  | "memory"
   | "final"
   | "error";
 
@@ -16,6 +17,8 @@ export type AgentEvent = {
   args?: Record<string, unknown>;
   observation?: unknown;
   steps?: string[];
+  sessionId?: string;
+  turnCount?: number;
 };
 
 export type AgentEventHandler = (event: AgentEvent) => void;

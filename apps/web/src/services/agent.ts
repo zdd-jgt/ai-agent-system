@@ -1,14 +1,24 @@
+import { getSessionId } from "../lib/session";
 import type { AgentStreamEvent } from "../types/agent-events";
 
 const API_BASE = "http://localhost:3001";
 
-export async function runAgent(message: string, mode = "react") {
+export type AgentRequestOptions = {
+  sessionId?: string;
+};
+
+export async function runAgent(
+  message: string,
+  mode = "react",
+  options?: AgentRequestOptions
+) {
+  const sessionId = options?.sessionId ?? getSessionId();
   const res = await fetch(`${API_BASE}/agent`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ message, mode }),
+    body: JSON.stringify({ message, mode, sessionId }),
   });
 
   return res.json() as Promise<{ result: string }>;
@@ -17,14 +27,16 @@ export async function runAgent(message: string, mode = "react") {
 export async function runAgentStream(
   message: string,
   mode: string,
-  onEvent: (event: AgentStreamEvent) => void
+  onEvent: (event: AgentStreamEvent) => void,
+  options?: AgentRequestOptions
 ): Promise<string> {
+  const sessionId = options?.sessionId ?? getSessionId();
   const res = await fetch(`${API_BASE}/agent/stream`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ message, mode }),
+    body: JSON.stringify({ message, mode, sessionId }),
   });
 
   if (!res.ok) {

@@ -1,11 +1,12 @@
 import { callDeepseek } from '../utils/llm'
 
 // 任务拆解
-export async function planTask(userInput: string) {
+export async function planTask(userInput: string, memoryContext = "") {
     const prompt = `
         你是一个任务规划 Agent。
 
         请把用户任务拆解成多个步骤。
+        ${memoryContext}
 
         【要求】
         1. 必须返回 JSON

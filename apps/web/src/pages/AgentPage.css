@@ -145,6 +145,113 @@
   gap: 0.75rem;
 }
 
+.agent-page__header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.agent-page__header-row h1 {
+  margin: 0;
+}
+
+.agent-memory {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--code-bg);
+  font-size: 0.75rem;
+}
+
+.agent-memory__label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.agent-memory__count {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.agent-memory__id {
+  font-family: var(--mono);
+  color: var(--text);
+  opacity: 0.85;
+}
+
+.agent-memory__clear {
+  margin-left: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.agent-memory__clear:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.react-trace__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.react-trace__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.react-trace__chevron {
+  display: inline-block;
+  width: 0.85rem;
+  font-size: 0.65rem;
+  color: var(--text);
+}
+
+.react-trace__bulk {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.react-trace__bulk-btn {
+  padding: 0.15rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.react-trace__bulk-btn:hover {
+  border-color: var(--accent-border);
+  color: var(--text-h);
+}
+
 .react-trace__header {
   font-size: 0.8rem;
   font-weight: 600;
@@ -168,10 +275,40 @@
   gap: 0.5rem;
 }
 
+.react-step__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
 .react-step__title {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-h);
+  flex: 1;
+}
+
+.react-step__badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.react-step__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
 }
 
 .react-phase {
